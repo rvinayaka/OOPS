@@ -30,7 +30,7 @@ def db_connection():
 # grades INTEGER, average NUMERIC, report_progress VARCHAR(300));
 
 
-@app.route("/add", methods=["GET", "POST"])  # CREATE an item
+@app.route("/students", methods=["GET", "POST"])  # CREATE an item
 def add_student():
     cur, conn = db_connection()
 
@@ -53,7 +53,7 @@ def add_student():
 
 
 @app.route("/", methods=["GET"])  # READ the cart list
-def show_cart():
+def show_grades():
     cur, conn = db_connection()
 
     show_query = "SELECT * FROM school;"
@@ -63,26 +63,57 @@ def show_cart():
     return jsonify({"message": data}), 200
 
 
-@app.route("/grades/<int:sno>", methods=["GET", "PUT"])
-def change_grades(sno):         # updating the grades with average
+# @app.route("/grades/<int:sno>", methods=["GET", "PUT"])
+# def change_grades(sno):         # updating the grades with average
+#     cur, conn = db_connection()
+#     try:
+#         if request.method == "POST":
+#             grades = request.json["grades"]
+#             avg = request.json["avg"]
+#
+#             query = """UPDATE school SET grades = %s, average = %s WHERE sno = %s"""
+#
+#             values = (grades, avg, sno)
+#             cur.execute(query, values)
+#             conn.commit()
+#
+#             cur.close()
+#             conn.close()
+#
+#         return jsonify({"message": "Grades updated"}), 200
+#     except TypeError:
+#         return jsonify({"message": "error"})
+
+
+@app.route("/student/<int:sno>", methods=["PUT"])
+def update_grades(sno):
     cur, conn = db_connection()
-    try:
-        if request.method == "POST":
-            grades = request.json["grades"]
-            avg = request.json["avg"]
 
-            query = """UPDATE school SET grades = %s, average = %s WHERE sno = %s"""
+    cur.execute("SELECT student from grades where sno = %s", (sno,))
+    get_character = cur.fetchone()
 
-            values = (grades, avg, sno)
-            cur.execute(query, values)
-            conn.commit()
+    if not get_character:
+        return jsonify({"message": "Student not found"}), 200
+    data = request.get_json()
+    std_name = data.get('std_name')
+    grades = data.get('grades')
+    average = data.get('average')
+    report_progress = data.get('report_progress')
 
-            cur.close()
-            conn.close()
+    if std_name:
+        cur.execute("UPDATE grades SET std_name = %s WHERE sno = %s", (std_name, sno))
+    elif grades:
+        cur.execute("UPDATE grades SET grades = %s WHERE sno = %s", (grades, sno))
+    elif average:
+        cur.execute("UPDATE grades SET average = %s WHERE sno = %s", (average, sno))
+    elif report_progress:
+        cur.execute("UPDATE grades SET report_progress = %s WHERE sno = %s", (report_progress, sno))
 
-        return jsonify({"message": "Grades updated"}), 200
-    except TypeError:
-        return jsonify({"message": "error"})
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"data": data})
 
 
 @app.route("/delete/<int:sno>", methods=["GET", "DELETE"])      # DELETE an item from cart
