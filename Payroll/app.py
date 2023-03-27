@@ -67,6 +67,37 @@ def emp_details():
     return jsonify({"message": data}), 200
 
 
+@app.route("/<string:emp_name>/<int:sno>", methods=["PUT"])
+def update_employee(sno):
+    cur, conn = db_connection()
+
+    cur.execute("SELECT emp_name from payroll where sno = %s", (sno,))
+    get_character = cur.fetchone()
+
+    if not get_character:
+        return jsonify({"message": "Character not found"}), 200
+    data = request.get_json()
+    emp_name = data.get('emp_name')
+    salary = data.get('salary')
+    taxes = data.get('interact')
+    benefits = data.get('benefits')
+
+    if emp_name:
+        cur.execute("UPDATE payroll SET emp_name = %s WHERE sno = %s", (emp_name, sno))
+    elif salary:
+        cur.execute("UPDATE payroll SET salary = %s WHERE sno = %s", (salary, sno))
+    elif taxes:
+        cur.execute("UPDATE payroll SET taxes = %s WHERE sno = %s", (taxes, sno))
+    elif benefits:
+        cur.execute("UPDATE payroll SET benefits = %s WHERE sno = %s", (benefits, sno))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"data": data})
+
+
 @app.route("/delete/<int:sno>", methods=["GET", "DELETE"])
 def delete_emp(sno):
     cur, conn = db_connection()

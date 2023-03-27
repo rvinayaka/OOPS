@@ -60,6 +60,34 @@ def show_cart():
     return jsonify({"message": data}), 200
 
 
+@app.route("/items/<int:sno>", methods=["PUT"])
+def update_item_details(sno):
+    cur, conn = connection()
+
+    cur.execute("SELECT items from cart where sno = %s", (sno,))
+    get_character = cur.fetchone()
+
+    if not get_character:
+        return jsonify({"message": "Item not found"}), 200
+    data = request.get_json()
+    items = data.get('items')
+    quantity = data.get('quantity')
+    price = data.get('price')
+
+    if items:
+        cur.execute("UPDATE cart SET items = %s WHERE sno = %s", (items, sno))
+    elif quantity:
+        cur.execute("UPDATE cart SET quantity = %s WHERE sno = %s", (quantity, sno))
+    elif price:
+        cur.execute("UPDATE cart SET price = %s WHERE sno = %s", (price, sno))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"data": data})
+
+
 @app.route("/checkout", methods=["GET", "POST"])    # Calculate the total price
 def checkout():
     cur, conn = connection()

@@ -29,8 +29,12 @@ def db_connection():
 # mechanics VARCHAR(300), interactions VARCHAR(500));
 
 # Game
-#  sno | character | mechanics | interactions
-# -----+-----------+-----------+--------------
+#  sno | character |     mechanics     |    interactions
+# -----+-----------+-------------------+---------------------
+#    1 | Naruto    | walk, jump, crawl | synergy, chat
+#    2 | Hinata    | battle, run       | Call,
+#    3 | Akamaru   | smell, bark       | sign language,
+#    4 | Anya      | think, attack     | hypnosis, magnetize
 
 @app.route("/characters", methods=["GET", "POST"])
 def create_character():

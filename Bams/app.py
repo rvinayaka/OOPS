@@ -1,9 +1,11 @@
 from flask import Flask, flash, request, jsonify
-from conn import set_connection
+from conn import set_connection         # fetching the connection from other file
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret key'
 
+
+# set database connection
 #
 # def set_connection():
 #     cur, conn = None, None
@@ -93,6 +95,18 @@ def deposit(srno):
     flash("Amount Deposited")
     conn.commit()
     return jsonify({"message": "Amount Deposited", "amount": updated_balance}), 200
+
+
+@app.route("/delete/<int:sno>", methods=["DELETE"])      # DELETE account from the list
+def delete_items(sno):
+    cur, conn = set_connection()
+
+    if request.method == "DELETE":
+        delete_query = "DELETE from bank WHERE sno = %s"
+        cur.execute(delete_query, (sno,))
+        conn.commit()
+
+    return jsonify({"message": "Deleted Successfully", "items_no": sno}), 200
 
 
 if __name__ == "__main__":
