@@ -25,7 +25,12 @@ def connection():           # Database connection
         return cur, conn
 
 
-@app.route('/add', methods=["GET", "POST"])
+#  sno |   type   | borrowed_on | returned
+# -----+----------+-------------+----------
+#    1 | Journal  | 2023-03-21  | t
+#    2 | Magazine | 2022-09-12  | f
+
+@app.route('/register', methods=["GET", "POST"])
 def add_member():           # adding new people who have taken the things from library
     cur, conn = connection()
 
@@ -33,6 +38,12 @@ def add_member():           # adding new people who have taken the things from l
         type = request.json["type"]
         borrowed_on = request.json["borrowDate"]
         returned = request.json["returned"]
+
+        # format = {
+        #     "type": "Magazine",
+        #     "borrowDate": "2022-09-12",
+        #     "returned": "False"
+        # }
 
         print(type, borrowed_on, returned)
 
@@ -43,8 +54,19 @@ def add_member():           # adding new people who have taken the things from l
         conn.commit()
     return jsonify({"message": "Added Successfully"}), 200
 
+@app.route("/", methods=["GET"])            # READ the cart list
+def show_entries():
+    cur, conn = connection()
 
-@app.route("/<string:type>/<int:sno>", methods=["PUT"])
+    show_query = "SELECT * FROM library;"
+    cur.execute(show_query)
+    data = cur.fetchall()
+    print("LIST", data)
+
+    return jsonify({"message": data}), 200
+
+
+@app.route("/library/<int:sno>", methods=["PUT"])   # update the values of member
 def update_details(sno):
     cur, conn = connection()
 
@@ -70,17 +92,6 @@ def update_details(sno):
     conn.close()
 
     return jsonify({"data": data})
-
-@app.route("/", methods=["GET"])            # READ the cart list
-def show_entries():
-    cur, conn = connection()
-
-    show_query = "SELECT * FROM library;"
-    cur.execute(show_query)
-    data = cur.fetchall()
-    print("LIST", data)
-
-    return jsonify({"message": data}), 200
 
 # @app.route("/library/<int:sno>", methods=["PUT"])
 # def update_details(sno):
@@ -109,9 +120,8 @@ def show_entries():
 #
 #     return jsonify({"data": data})
 
-
 @app.route("/delete/<int:sno>", methods=["DELETE"])      # DELETE an item from cart
-def delete_items(sno):
+def delete_member(sno):
     cur, conn = connection()
 
     if request.method == "DELETE":

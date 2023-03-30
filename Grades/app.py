@@ -29,6 +29,13 @@ def db_connection():
 # CREATE TABLE school(sno SERIAL PRIMARY KEY ,std_name VARCHAR(200) NOT NULL,
 # grades INTEGER, average NUMERIC, report_progress VARCHAR(300));
 
+#  sno | std_name | grades | average | report_progress
+# -----+----------+--------+---------+------------------
+#    1 | Rajguru  |    200 |    78.2 | done calculating
+#    2 | SPB      |    250 |      76 | reviewed
+#    3 | arijit   |    220 |      71 | evaluating
+#    4 | shreya   |    210 |      70 | reviewing
+#    6 | Hinata   |    700 |      75 | done
 
 @app.route("/students", methods=["GET", "POST"])  # CREATE an item
 def add_student():
@@ -39,6 +46,13 @@ def add_student():
         grades = request.json["grades"]  # int
         average = request.json["avg"]  # float
         report_progress = request.json["prog"]  # string
+
+        # format = {
+        #     "stdName": "Hinata",
+        #     "grades": 700,
+        #     "avg": 75,
+        #     "prog": "done"
+        # }
 
         add_query = """INSERT INTO school(std_name, grades, 
                             average, report_progress) VALUES (%s, %s, %s, %s)"""
@@ -53,7 +67,7 @@ def add_student():
 
 
 @app.route("/", methods=["GET"])  # READ the cart list
-def show_grades():
+def show_std_grades():
     cur, conn = db_connection()
 
     show_query = "SELECT * FROM school;"
@@ -61,7 +75,6 @@ def show_grades():
     data = cur.fetchall()
 
     return jsonify({"message": data}), 200
-
 
 # @app.route("/grades/<int:sno>", methods=["GET", "PUT"])
 # def change_grades(sno):         # updating the grades with average
@@ -84,12 +97,11 @@ def show_grades():
 #     except TypeError:
 #         return jsonify({"message": "error"})
 
-
-@app.route("/student/<int:sno>", methods=["PUT"])
-def update_grades(sno):
+@app.route("/students/<int:sno>", methods=["PUT"])
+def update_std_grades(sno):
     cur, conn = db_connection()
 
-    cur.execute("SELECT student from grades where sno = %s", (sno,))
+    cur.execute("SELECT std_name from school where sno = %s", (sno,))
     get_character = cur.fetchone()
 
     if not get_character:
@@ -101,13 +113,13 @@ def update_grades(sno):
     report_progress = data.get('report_progress')
 
     if std_name:
-        cur.execute("UPDATE grades SET std_name = %s WHERE sno = %s", (std_name, sno))
+        cur.execute("UPDATE school SET std_name = %s WHERE sno = %s", (std_name, sno))
     elif grades:
-        cur.execute("UPDATE grades SET grades = %s WHERE sno = %s", (grades, sno))
+        cur.execute("UPDATE school SET grades = %s WHERE sno = %s", (grades, sno))
     elif average:
-        cur.execute("UPDATE grades SET average = %s WHERE sno = %s", (average, sno))
+        cur.execute("UPDATE school SET average = %s WHERE sno = %s", (average, sno))
     elif report_progress:
-        cur.execute("UPDATE grades SET report_progress = %s WHERE sno = %s", (report_progress, sno))
+        cur.execute("UPDATE school SET report_progress = %s WHERE sno = %s", (report_progress, sno))
 
     conn.commit()
     cur.close()

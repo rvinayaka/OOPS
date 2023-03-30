@@ -6,6 +6,14 @@ app = Flask(__name__)
 # Employee payroll system - Design a class to manage employee payroll,
 # including calculating salaries, taxes, and benefits.
 
+#  sno | emp_name  | salary | taxes  | benefits
+# -----+-----------+--------+--------+----------
+#    1 | ABCD      |   4000 |  720.0 |   2000.0
+#    2 | XYZ       |   8000 | 1440.0 |   4000.0
+#    4 | FERNANDES |  12000 | 2160.0 |   6000.0
+#    5 | NARUTO    |  14000 | 2520.0 |   7000.0
+#    6 | Hinata    |  20000 | 3600.0 |  10000.0
+
 
 def db_connection():
     cur, conn = None, None
@@ -26,7 +34,7 @@ def db_connection():
         return cur, conn
 
 
-@app.route("/add", methods=["GET", "POST"])             # CREATE an item
+@app.route("/employee", methods=["GET", "POST"])             # CREATE an item
 def add_employee():
     cur, conn = db_connection()
 
@@ -36,6 +44,11 @@ def add_employee():
         taxes = salary * 0.18
         benefits = salary * 0.5
         print(emp_name, salary, taxes, benefits)
+
+        # format = {
+        #     "empName": "Hinata",
+        #     "salary": 20000
+        # }
 
         add_query = """INSERT INTO payroll(emp_name, salary, 
                             taxes, benefits) VALUES (%s, %s, %s, %s)"""
@@ -53,7 +66,7 @@ def add_employee():
 
 
 @app.route("/", methods=["GET"])            # READ the cart list
-def emp_details():
+def show_emp_list():
     cur, conn = db_connection()
 
     show_query = "SELECT * FROM payroll;"
@@ -67,8 +80,8 @@ def emp_details():
     return jsonify({"message": data}), 200
 
 
-@app.route("/<string:emp_name>/<int:sno>", methods=["PUT"])
-def update_employee(sno):
+@app.route("/employee/<int:sno>", methods=["PUT"])
+def update_emp_details(sno):
     cur, conn = db_connection()
 
     cur.execute("SELECT emp_name from payroll where sno = %s", (sno,))

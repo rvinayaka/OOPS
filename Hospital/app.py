@@ -27,11 +27,13 @@ def connection():
 # admission DATE NOT NULL, treatments VARCHAR(400), discharge DATE NOT NULL);
 
 # Table:
-#  sno | patient_name | admission | treatments | discharge
-# -----+--------------+-----------+------------+-----------
+#  sno | patient_name | admission  |     treatments     | discharge
+# -----+--------------+------------+--------------------+------------
+#    1 | Andrew       | 1912-06-19 | band-aid, glucose  | 1912-07-02
+#    2 | Hosikage     | 1929-10-09 | Check-up, Insuline | 1929-10-30
 
-@app.route("/patients", methods=["GET", "POST"])             # Add patient
-def add_details():
+@app.route("/patients", methods=["GET", "POST"])             # Add new patient
+def add_new_patients():
     cur, conn = connection()
 
     if request.method == "POST":
@@ -39,6 +41,13 @@ def add_details():
         admission = request.json["admission"]
         treatments = request.json["treatments"]
         discharge = request.json["discharge"]
+
+        # format = {
+        #     "patient": "Hosikage",
+        #     "admission": "1929-10-09",
+        #     "treatments": "injection, saline",
+        #     "discharge": "1929-10-30"
+        # }
 
         add_query = """INSERT INTO hospital(patient_name, admission, treatments,  
                             discharge) VALUES (%s, %s, %s, %s)"""
@@ -51,7 +60,7 @@ def add_details():
 
 
 @app.route("/", methods=["GET"])        # READ the details
-def show_list():
+def show_patients_list():
     cur, conn = connection()
     cur.execute("SELECT * FROM hospital")
     data = cur.fetchall()
@@ -59,40 +68,43 @@ def show_list():
     return jsonify({"message": data}), 200
 
 
-@app.route("/<string:patient_name>/<int:sno>", methods=["PUT"])
+@app.route("/patients/<int:sno>", methods=["PUT"])  # Update the details
 def update_patients_details(sno):          # Update the details of patient
     cur, conn = connection()
 
-    cur.execute("SELECT patient_name from hospital where sno = %s", (sno,))
-    get_character = cur.fetchone()
+    try:
+        cur.execute("SELECT patient_name from hospital where sno = %s", (sno,))
+        get_patient = cur.fetchone()
 
-    if not get_character:
-        return jsonify({"message": "Character not found"}), 200
-    data = request.get_json()
-    patient_name = data.get('stock_name')
-    admission = data.get('admission')
-    treatments = data.get('treatments')
-    discharge = data.get('discharge')
-    balance = data.get('balance')
+        if not get_patient:
+            return jsonify({"message": "Character not found"}), 200
 
-    if patient_name:
-        cur.execute("UPDATE hospital SET patient_name = %s WHERE sno = %s", (patient_name, sno))
-    elif admission:
-        cur.execute("UPDATE hospital SET admission = %s WHERE sno = %s", (admission, sno))
-    elif treatments:
-        cur.execute("UPDATE hospital SET treatments = %s WHERE sno = %s", (treatments, sno))
-    elif discharge:
-        cur.execute("UPDATE hospital SET losses = %s WHERE sno = %s", (discharge, sno))
+        data = request.get_json()
+        patient_name = data.get('patient')
+        admission = data.get('admission')
+        treatments = data.get('treatments')
+        discharge = data.get('discharge')
 
-    conn.commit()
-    cur.close()
-    conn.close()
+        if patient_name:
+            cur.execute("UPDATE hospital SET patient_name = %s WHERE sno = %s", (patient_name, sno))
+        elif admission:
+            cur.execute("UPDATE hospital SET admission = %s WHERE sno = %s", (admission, sno))
+        elif treatments:
+            cur.execute("UPDATE hospital SET treatments = %s WHERE sno = %s", (treatments, sno))
+        elif discharge:
+            cur.execute("UPDATE hospital SET losses = %s WHERE sno = %s", (discharge, sno))
 
-    return jsonify({"data": data})
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({"data": data})
+    except TypeError as error:
+        return jsonify({"message": error})
 
 
 @app.route("/delete/<int:sno>", methods=["DELETE"])      # DELETE an item from cart
-def delete_items(sno):
+def delete_patients(sno):
     cur, conn = connection()
 
     if request.method == "DELETE":

@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-03-27T10:14:47.469Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="zNRQjTxI09SrcCpVyjQj" version="21.1.1" type="device">
+<mxfile host="app.diagrams.net" modified="2023-03-27T11:05:53.893Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="2c2qzSNi-rrwkXsCkahr" version="21.1.1" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="2261" dy="2018" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1584" dy="1583" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -69,7 +69,7 @@
         <mxCell id="LrWlpLyFXJIx8diWVtie-15" value="Show error" style="html=1;overflow=block;blockSpacing=1;whiteSpace=wrap;fontSize=16.7;fontColor=#3a414a;fontStyle=1;spacing=9;strokeColor=#3a414a;strokeOpacity=100;rounded=1;absoluteArcSize=1;arcSize=9;strokeWidth=2.3;lucidId=x1nJFK~-Txfk;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="-529.5" y="390" width="135" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="LrWlpLyFXJIx8diWVtie-16" value="Get all the inputs from the user and add students details to the table" style="html=1;overflow=block;blockSpacing=1;whiteSpace=wrap;fontSize=16.7;fontColor=#3a414a;fontStyle=1;spacing=3.8;strokeColor=#3a414a;strokeOpacity=100;rounded=1;absoluteArcSize=1;arcSize=9;strokeWidth=2.3;lucidId=D1nJpW8UFT_m;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="LrWlpLyFXJIx8diWVtie-16" value="Get all the inputs from the user and add employee details to the table" style="html=1;overflow=block;blockSpacing=1;whiteSpace=wrap;fontSize=16.7;fontColor=#3a414a;fontStyle=1;spacing=3.8;strokeColor=#3a414a;strokeOpacity=100;rounded=1;absoluteArcSize=1;arcSize=9;strokeWidth=2.3;lucidId=D1nJpW8UFT_m;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="-454.5" y="588" width="195" height="90" as="geometry" />
         </mxCell>
         <mxCell id="LrWlpLyFXJIx8diWVtie-17" value="" style="html=1;jettySize=18;whiteSpace=wrap;fontSize=13;strokeColor=#3a414a;strokeOpacity=100;strokeWidth=2.3;rounded=1;arcSize=12;edgeStyle=orthogonalEdgeStyle;startArrow=none;endArrow=block;endFill=1;exitX=0.5;exitY=1.019;exitPerimeter=0;entryX=0.5;entryY=0.004;entryPerimeter=0;lucidId=H1nJpXGm5EIF;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="LrWlpLyFXJIx8diWVtie-1" target="LrWlpLyFXJIx8diWVtie-14">

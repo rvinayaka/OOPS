@@ -37,29 +37,44 @@ def connection():
 #    3 | Synergy     | buying  |     150 |    1800 | f
 #    4 | ITC         | buying  |      80 |    1800 | t
 
+#  id | stock_name  | status  | returns | balance | calculated
+# ----+-------------+---------+---------+---------+------------
+#   1 | Adani Power | selling |   -2000 |    2800 | t
+#   2 | Tata motors | selling |     150 |    3000 | t
+#   3 | Synergy     | buying  |     150 |    1800 | f
+#   4 | ITC         | buying  |      80 |    1800 | t
+#   5 | sysco       | buying  |     200 |    1200 |
 
-@app.route("/stocks", methods=["GET", "POST"])             # CREATE an stock profile
-def add_details():
+@app.route("/stocks", methods=["GET", "POST"])             # CREATE a stock profile
+def add_new_stock():
     cur, conn = connection()
+    try:
 
-    if request.method == "POST":
-        stock_name = request.json["stockName"]
-        status = request.json["status"]
-        profits = request.json["profits"]
-        losses = request.json["losses"]
-        balance = request.json["balance"]
+        if request.method == "POST":
+            stock_name = request.json["stockName"]
+            status = request.json["status"]
+            returns = request.json["returns"]
+            balance = request.json["balance"]
+            # format = {
+            #     "stockName": "sysco",
+            #     "status": "buying",
+            #     "returns": 200,
+            #     "balance": 1200
+            # }
 
-        add_query = """INSERT INTO stocks(stock_name, status, profits,  
-                            losses, balance) VALUES (%s, %s, %s, %s, %s)"""
+            add_query = """INSERT INTO stocks(stock_name, status,  
+                                returns, balance) VALUES (%s, %s, %s, %s)"""
 
-        values = (stock_name, status, profits, losses, balance)
-        cur.execute(add_query, values)
-        conn.commit()
-    return jsonify({"message": "Added Successfully"}), 200
+            values = (stock_name, status, returns, balance)
+            cur.execute(add_query, values)
+            conn.commit()
+        return jsonify({"message": "Added Successfully"}), 200
+    except KeyError:
+        return jsonify({"message": "Keywords didn't match"})
 
 
 @app.route("/", methods=["GET"])                            # READ the details of all stocks
-def show_list():
+def show_all_stocks():
     cur, conn = connection()
     cur.execute("SELECT * FROM stocks")
     data = cur.fetchall()
@@ -82,12 +97,11 @@ def show_list():
 #     print(get_balance, status, balance)
 #     return jsonify({"message": "Buying successful"}), 200
 
-
-@app.route("/<string:stocks_name>/<int:sno>", methods=["PUT"])  # update details of stocks
-def update_stock_details(sno):
+@app.route("/stocks/<int:id>", methods=["PUT"])  # update details of stocks
+def update_stock_details(id):
     cur, conn = connection()
 
-    cur.execute("SELECT stock_name from stocks where sno = %s", (sno,))
+    cur.execute("SELECT stock_name from stocks where id = %s", (id,))
     get_character = cur.fetchone()
 
     if not get_character:
@@ -95,20 +109,17 @@ def update_stock_details(sno):
     data = request.get_json()
     stock_name = data.get('stock_name')
     status = data.get('status')
-    profits = data.get('profits')
-    losses = data.get('losses')
+    returns = data.get('returns')
     balance = data.get('balance')
 
     if stock_name:
-        cur.execute("UPDATE game SET stock_name = %s WHERE sno = %s", (stock_name, sno))
+        cur.execute("UPDATE game SET stock_name = %s WHERE id = %s", (stock_name, id))
     elif status:
-        cur.execute("UPDATE game SET status = %s WHERE sno = %s", (status, sno))
-    elif profits:
-        cur.execute("UPDATE game SET profits = %s WHERE sno = %s", (profits, sno))
-    elif losses:
-        cur.execute("UPDATE game SET losses = %s WHERE sno = %s", (losses, sno))
+        cur.execute("UPDATE game SET status = %s WHERE id = %s", (status, id))
+    elif returns:
+        cur.execute("UPDATE game SET returns = %s WHERE sno = %s", (returns, id))
     elif balance:
-        cur.execute("UPDATE game SET balance = %s WHERE sno = %s", (balance, sno))
+        cur.execute("UPDATE game SET balance = %s WHERE sno = %s", (balance, id))
 
     conn.commit()
     cur.close()
@@ -151,7 +162,7 @@ def calc_returns(stock_name):
 
 
 @app.route("/delete/<int:sno>", methods=["DELETE"])      # DELETE an item from cart
-def delete_stocks(sno):
+def delete_stock(sno):
     cur, conn = connection()
 
     if request.method == "DELETE":
