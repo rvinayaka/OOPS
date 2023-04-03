@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import psycopg2
+import logging
 
 app = Flask(__name__)
 
@@ -23,41 +24,74 @@ def connection():
         return cur, conn
 
 
-create_query = (
-    """CREATE table cart( sno serial PRIMARY KEY,
-                        items VARCHAR(200) NOT NULL, 
-                        quantity INTEGER NOT NULL, 
-                        price INTEGER NOT NULL );"""
-)
+# create_query = (
+#     """CREATE table cart( sno serial PRIMARY KEY,
+#                         items VARCHAR(200) NOT NULL,
+#                         quantity INTEGER NOT NULL,
+#                         price INTEGER NOT NULL );"""
+# )
+
+#  sno | items  | quantity | price
+# -----+--------+----------+-------
+#    1 | Apples |        5 |   300
+#    2 | Mango  |        6 |   800
+#    3 | KIWI   |       10 |  1000
 
 
-@app.route("/add", methods=["GET", "POST"])             # CREATE an item
+@app.route("/add", methods=["POST"])             # CREATE an item
 def add_to_cart():
     cur, conn = connection()
 
-    if request.method == "POST":
+    try:
         items = request.json["items"]
         quantity = request.json["quantity"]
         price = request.json["price"]
 
+        # input_format = {
+        #     "items": "KIWI",
+        #     "quantity": 10,
+        #     "price": 1000
+        # }
+
+
+        # insert query
         add_query = """INSERT INTO cart(items, 
                             quantity, price) VALUES (%s, %s, %s)"""
 
         values = (items, quantity, price)
+
+        # execute query
         cur.execute(add_query, values)
+
+        # committing the change done to table
         conn.commit()
-    return jsonify({"message": "Added Successfully"}), 200
+        return jsonify({"message": "Added Successfully"}), 201
+    except Exception as e:
+        logging.warning(f"{e}occurred")
+        return jsonify(({"message": e}))
+    finally:
+        # close the database connection
+        conn.close()
+        cur.close()
+
 
 
 @app.route("/", methods=["GET"])            # READ the cart list
 def show_cart():
     cur, conn = connection()
 
-    show_query = "SELECT * FROM cart;"
-    cur.execute(show_query)
-    data = cur.fetchall()
+    try:
+        show_query = "SELECT * FROM cart;"
+        cur.execute(show_query)
+        data = cur.fetchall()
 
-    return jsonify({"message": data}), 200
+        return jsonify({"message": data}), 202
+    except Exception as e:
+        logging.warning(f"{e} occurred")
+        return jsonify(({"message": e}))
+    finally:
+        conn.close()
+        cur.close()
 
 
 @app.route("/items/<int:sno>", methods=["PUT"])
@@ -65,9 +99,9 @@ def update_item_details(sno):
     cur, conn = connection()
 
     cur.execute("SELECT items from cart where sno = %s", (sno,))
-    get_character = cur.fetchone()
+    get_item = cur.fetchone()
 
-    if not get_character:
+    if not get_item:
         return jsonify({"message": "Item not found"}), 200
     data = request.get_json()
     items = data.get('items')

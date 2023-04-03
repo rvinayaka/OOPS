@@ -42,7 +42,7 @@ def connection():           # Database connection
 
 
 @app.route('/guests', methods=["GET", "POST"])
-def add_member():           # adding new people who have taken the things from hotel
+def add_new_guests():           # adding new people who have taken the things from hotel
     cur, conn = connection()
 
     if request.method == "POST":
@@ -89,7 +89,7 @@ def show_entries():
 
 
 @app.route("/rooms/<int:id>", methods=["PUT"])
-def update_details(id):                  # Update the details
+def update_guest_details(id):                  # Update the details
     cur, conn = connection()
 
     cur.execute("SELECT room_id from hotel where id = %s", (id,))
@@ -122,7 +122,7 @@ def update_details(id):                  # Update the details
 
 
 @app.route("/delete/<int:id>", methods=["DELETE"])      # DELETE an item from cart
-def delete_items(id):
+def delete_guests(id):
     cur, conn = connection()
 
     if request.method == "DELETE":

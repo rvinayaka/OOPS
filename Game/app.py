@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 import psycopg2
-
 app = Flask(__name__)
 
 def db_connection():
@@ -81,7 +80,7 @@ def update_character(sno):
     interact = data.get('interact')
 
     if char:
-        cur.execute("UPDATE game SET character = %s WHERE sno = %s", (char, sno))
+        cur.execute("UPDATE game SET game.character = %s WHERE sno = %s", (char, sno))
     elif mech:
         cur.execute("UPDATE game SET mechanics = %s WHERE sno = %s", (mech, sno))
     elif interact:
