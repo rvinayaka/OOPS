@@ -1,0 +1,12 @@
+INFO :- 2023-04-03 13:16:08,636 - app : Starting the connection to save item to buy later
+ERROR :- 2023-04-03 13:16:08,885 - app : Rectify the syntax error at or near "%"
+LINE 1: UPDATE cart SET save_for_later = TRUE WHERE sno = %s
+                                                          ^
+
+ERROR :- 2023-04-03 13:16:08,885 - app : Rectify the syntax error at or near "%"
+LINE 1: UPDATE cart SET save_for_later = TRUE WHERE sno = %s
+                                                          ^
+
+INFO :- 2023-04-03 13:16:08,886 - app : Closing the connection
+INFO :- 2023-04-03 13:16:08,886 - app : Closing the connection
+INFO :- 2023-04-03 13:16:08,886 - app : Closing the connection
